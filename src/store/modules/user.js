@@ -68,9 +68,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       ax.post('/books', newCategory)
         .then(res => {
-          if (res.status == 200) {
-            resolve();
-          }
+          resolve();
         })
         .catch(err => reject(err))
     })
@@ -79,9 +77,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       ax.post(`/books/${id}`)
         .then(res => {
-          if (res.status == 200) {
-            resolve();
-          }
+          resolve();
         })
         .catch(err => reject(err))
     })

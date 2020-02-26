@@ -37,7 +37,10 @@ router.post('/:id', verifyToken, (req, res) => {
       res.status(403).json({ message: err });
     } else {
       const booksDB = await loadBooks();
-      booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $pull: { categories: { $elemMatch: { category_id: req.params.id } } } });
+      const user = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
+      let categories = await user[0].categories;
+      categories = categories.filter(item => item.category_id !== req.params.id);
+      await booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $set: { categories: categories } });
       res.status(200)
     }
   })

@@ -65,8 +65,19 @@ router.post('/login', async (req, res) => {
 
 // All users
 router.get('/', async (req, res) => {
-  const users = await loadUsers();
-  res.send(await users.find({}).toArray());
+  const data = await loadUsers();
+  const infos = await data.find({}).toArray();
+  let users = [];
+  users = infos.map(info => {
+    return {
+      _id: info._id,
+      fullname: info.fullname,
+      username: info.username,
+      email: info.email,
+      password: info.password,
+    }
+  })
+  res.json(users);
 })
 
 async function loadUsers() {
