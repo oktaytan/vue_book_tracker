@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-btn icon @click.stop="dialog = true">
+    <v-btn icon @click.stop="dialog = true" :disabled="updBook.isRead">
       <v-icon color="orange lighten-1">edit</v-icon>
     </v-btn>
 
@@ -19,6 +19,13 @@
               color="teal lighten-2"
               label="Yazar Adı"
               v-model="book.author"
+            ></v-text-field>
+            <v-text-field
+              color="teal lighten-2"
+              type="number"
+              label="Sayfa Sayısı"
+              min="0"
+              v-model="book.pages"
             ></v-text-field>
             <v-select
               color="teal lighten-2"
@@ -65,6 +72,8 @@
 </template>
 
 <script>
+import { capitalize } from "../util/settings";
+
 export default {
   name: "UpdateBook",
   props: {
@@ -84,37 +93,25 @@ export default {
       book: {
         title: "",
         author: "",
+        pages: null,
         category: ""
       }
     };
   },
-  created() {
+  mounted() {
     this.book.title = this.updBook.title;
     this.book.author = this.updBook.author;
+    this.book.pages = this.updBook.pages;
     this.book.category = this.updBook.category;
   },
   methods: {
-    capitalize(value) {
-      let newValue;
-      if (value.split(" ").length > 0) {
-        newValue = value
-          .split(" ")
-          .map(val => {
-            return val.charAt(0).toUpperCase() + val.substr(1);
-          })
-          .join(" ");
-      } else {
-        newValue = value.charAt(0).toUpperCase() + value.substr(1);
-      }
-
-      return newValue;
-    },
     updateBook() {
       let newBook = {
         id: this.updBook.id,
-        title: this.capitalize(this.book.title),
-        author: this.capitalize(this.book.author),
-        category: this.capitalize(this.book.category),
+        title: this.book.title && capitalize(this.book.title),
+        author: this.book.author && capitalize(this.book.author),
+        pages: this.book.pages,
+        category: this.book.category && capitalize(this.book.category),
         isRead: this.updBook.isRead
       };
       this.$emit("update-book", newBook);

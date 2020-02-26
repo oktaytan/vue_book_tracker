@@ -1,24 +1,25 @@
 <template>
   <v-list-item-group>
-    <v-list-item @click="toogle(book.id)">
+    <v-list-item @click.stop="toogle(book.id)">
       <v-list-item-action>
         <UpdateBook
-          style="margin-left: 1px"
+          style="margin-left: 1px;"
           :updBook="book"
           @update-book="updateBook"
           @delete-book="deleteBook"
+          :class="book.isRead ? 'opacity' : ''"
         />
       </v-list-item-action>
 
-      <v-list-item-content>
+      <v-list-item-content :class="book.isRead ? 'opacity' : ''">
         <v-list-item-title v-text="book.title"></v-list-item-title>
         <v-list-item-subtitle v-text="subtitle"></v-list-item-subtitle>
-        <v-list-item-subtitle v-text="book.category"></v-list-item-subtitle>
+        <v-list-item-subtitle>{{ book.pages }} sayfa</v-list-item-subtitle>
       </v-list-item-content>
 
       <v-list-item-action>
         <v-btn icon @click.stop="book.isRead = !book.isRead"
-          ><v-icon :color="book.isRead ? 'teal lighten-2' : 'grey'"
+          ><v-icon :color="book.isRead ? 'teal lighten-2' : 'grey lighten-2'"
             >check_circle</v-icon
           ></v-btn
         >
@@ -59,3 +60,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.opacity {
+  opacity: 0.3;
+}
+</style>

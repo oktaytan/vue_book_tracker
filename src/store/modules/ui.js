@@ -5,30 +5,30 @@ const state = {
     text: 'Notification placeholder text',
     timeout: 3000,
     class: 'success'
-  },
-  displaySearchList: false
+  }
 };
 
 const getters = {
   getDrawer: state => state.drawer,
   notification: state => state.notification,
-  getSearchBar: state => state.displaySearchList
 };
 
 const actions = {
   workDrawer: ({ commit }, value) => commit('setDrawer', value),
   workNotification: ({ commit }, value) => commit('setNotification', value),
-  workSearchBar: ({ commit }, value) => commit('setSearchBar', value),
 };
 
 const mutations = {
   setDrawer: (state, payload) => state.drawer = payload,
-  setNotification: (state, { display, text, alertClass }) => {
-    state.notification.display = display;
-    state.notification.text = text;
-    state.notification.class = alertClass;
+  setNotification: (state, { display, text, alertClass, timeout }) => {
+    return new Promise((resolve, reject) => {
+      state.notification.display = display;
+      state.notification.text = text;
+      state.notification.class = alertClass;
+      state.notification.timeout = timeout;
+      resolve();
+    })
   },
-  setSearchBar: (state, payload) => state.displaySearchList = payload
 };
 
 
