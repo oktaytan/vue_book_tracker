@@ -1,12 +1,16 @@
 import { ax } from '../../util/settings';
 
 const state = {
-  user: {},
+  userInfo: {},
   isLogin: false,
+  categories: [],
+  books: []
 };
 
 const getters = {
-  getUser: state => state.user,
+  getUser: state => state.userInfo,
+  fetchCategories: state => state.categories,
+  fetchBooks: state => state.books[0],
   isLogin: state => state.isLogin
 };
 
@@ -49,21 +53,58 @@ const actions = {
       commit('logout');
       resolve(true);
     })
-  }
+  },
+  getCategoriesAction: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      ax.get('/books')
+        .then(res => {
+          commit('setCategories', res.data[0]);
+          resolve();
+        })
+        .catch(err => reject(err))
+    })
+  },
+  addCategoryAction: ({ commit }, newCategory) => {
+    return new Promise((resolve, reject) => {
+      ax.post('/books', newCategory)
+        .then(res => {
+          if (res.status == 200) {
+            resolve();
+          }
+        })
+        .catch(err => reject(err))
+    })
+  },
+  deleteCategoryAction: ({ commit }, id) => {
+    return new Promise((resolve, reject) => {
+      ax.post(`/books/${id}`)
+        .then(res => {
+          if (res.status == 200) {
+            resolve();
+          }
+        })
+        .catch(err => reject(err))
+    })
+  },
+  getBooksAction: ({ commit }, id) => commit('getBooks', id)
 };
 
 const mutations = {
   login: (state) => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user !== null) {
-      state.user = user;
+      state.userInfo = user;
       state.isLogin = true;
     }
   },
   setLogin: (state, value) => state.isLogin = value,
   logout: state => {
-    state.user = null,
+    state.userInfo = null,
       state.isLogin = false
+  },
+  setCategories: (state, data) => state.categories = data.categories,
+  getBooks: (state, id) => {
+    state.books = state.categories.filter(item => item.category_id === id).map(list => list.books)
   }
 };
 

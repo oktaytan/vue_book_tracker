@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-btn icon @click.stop="dialog = true" :disabled="updBook.isRead">
-      <v-icon color="orange lighten-1">edit</v-icon>
+      <v-icon :color="getColors.secondary">edit</v-icon>
     </v-btn>
 
     <v-dialog v-model="dialog" max-width="500">
@@ -11,24 +11,24 @@
         <v-card-text>
           <v-form>
             <v-text-field
-              color="teal lighten-2"
+              :color="getColors.primary"
               label="Kitap Adı"
               v-model="book.title"
             ></v-text-field>
             <v-text-field
-              color="teal lighten-2"
+              :color="getColors.primary"
               label="Yazar Adı"
               v-model="book.author"
             ></v-text-field>
             <v-text-field
-              color="teal lighten-2"
+              :color="getColors.primary"
               type="number"
               label="Sayfa Sayısı"
               min="0"
               v-model="book.pages"
             ></v-text-field>
             <v-select
-              color="teal lighten-2"
+              :color="getColors.primary"
               :items="categories"
               label="Kategori"
               v-model="book.category"
@@ -39,7 +39,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn color="orange" text @click="deleteBook">
+          <v-btn :color="getColors.secondary" text @click="deleteBook">
             Sil
             <v-dialog v-model="deleteConfirm" max-width="450">
               <v-card>
@@ -62,7 +62,7 @@
             </v-dialog>
           </v-btn>
 
-          <v-btn color="teal lighten-2" text @click="updateBook">
+          <v-btn :color="getColors.primary" text @click="updateBook">
             Düzenle
           </v-btn>
         </v-card-actions>
@@ -73,6 +73,7 @@
 
 <script>
 import { capitalize } from "../util/settings";
+import { mapGetters } from "vuex";
 
 export default {
   name: "UpdateBook",
@@ -97,6 +98,9 @@ export default {
         category: ""
       }
     };
+  },
+  computed: {
+    ...mapGetters(["getColors"])
   },
   mounted() {
     this.book.title = this.updBook.title;

@@ -1,52 +1,60 @@
 <template>
   <v-row>
     <v-btn icon @click.stop="dialog = true">
-      <v-icon color="orange lighten-1">add</v-icon>
+      <v-icon :color="getColors.secondary">add</v-icon>
     </v-btn>
 
     <v-dialog v-model="dialog" max-width="500">
-      <v-card>
-        <v-card-title class="headline">Kitap ekle</v-card-title>
+      <v-form @submit.prevent="addBook">
+        <v-card>
+          <v-card-title class="headline">Kitap ekle</v-card-title>
 
-        <v-card-text>
-          <v-form>
+          <v-card-text>
             <v-text-field
-              color="teal lighten-2"
+              :color="getColors.primary"
               label="Kitap Adı"
               v-model="book.title"
             ></v-text-field>
             <v-text-field
-              color="teal lighten-2"
+              :color="getColors.primary"
               label="Yazar Adı"
               v-model="book.author"
             ></v-text-field>
+            <v-text-field
+              :color="getColors.primary"
+              label="Sayfa Sayısı"
+              type="number"
+              min="0"
+              v-model="book.pages"
+            ></v-text-field>
             <v-select
-              color="teal lighten-2"
+              :color="getColors.primary"
               :items="categories"
               label="Kategori"
               v-model="book.category"
             ></v-select>
-          </v-form>
-        </v-card-text>
+          </v-card-text>
 
-        <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-card-actions>
+            <v-spacer></v-spacer>
 
-          <v-btn color="orange" text @click="closeDialog">
-            İptal
-          </v-btn>
+            <v-btn :color="getColors.secondary" text @click="closeDialog">
+              İptal
+            </v-btn>
 
-          <v-btn color="teal lighten-2" text @click="addBook">
-            Ekle
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+            <v-btn type="submit" :color="getColors.primary" text>
+              Ekle
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
     </v-dialog>
   </v-row>
 </template>
 
 <script>
 import { capitalize } from "../util/settings";
+import { mapGetters } from "vuex";
 
 export default {
   name: "NewBook",
@@ -63,25 +71,35 @@ export default {
       book: {
         title: "",
         author: "",
+        pages: null,
         category: ""
       }
     };
+  },
+  computed: {
+    ...mapGetters(["getColors"])
   },
   methods: {
     addBook() {
       let newBook = {
         title: capitalize(this.book.title),
         author: capitalize(this.book.author),
+        pages: this.book.pages,
         category: capitalize(this.book.category)
       };
       this.$emit("add-book", newBook);
       this.dialog = false;
       this.book.title = "";
       this.book.author = "";
+      this.book.pages = null;
       this.book.category = "";
     },
     closeDialog() {
       this.dialog = false;
+      this.book.title = "";
+      this.book.author = "";
+      this.book.pages = null;
+      this.book.category = "";
     }
   }
 };

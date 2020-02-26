@@ -17,6 +17,32 @@ router.get('/', verifyToken, (req, res) => {
   })
 })
 
+// Add new category
+router.post('/', verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', async (err, authData) => {
+    if (err) {
+      res.status(403).json({ message: err });
+    } else {
+      const booksDB = await loadBooks();
+      booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $addToSet: { categories: req.body } });
+      res.status(200)
+    }
+  })
+});
+
+// Remove category
+router.post('/:id', verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', async (err, authData) => {
+    if (err) {
+      res.status(403).json({ message: err });
+    } else {
+      const booksDB = await loadBooks();
+      booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $pull: { categories: { $elemMatch: { category_id: req.params.id } } } });
+      res.status(200)
+    }
+  })
+});
+
 async function loadBooks() {
   const client = await mongodb.MongoClient.connect('mongodb://localhost:27017/vue_book_db',
     { useNewUrlParser: true, useUnifiedTopology: true });

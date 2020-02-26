@@ -5,12 +5,19 @@ const state = {
     text: 'Notification placeholder text',
     timeout: 3000,
     class: 'success'
+  },
+  colors: {
+    primary: '#2680C2',
+    secondary: '#DE911D',
+    bg: '#f0f4f8',
+    text: '#486581',
   }
 };
 
 const getters = {
   getDrawer: state => state.drawer,
   notification: state => state.notification,
+  getColors: state => state.colors
 };
 
 const actions = {

@@ -1,10 +1,21 @@
 <template>
-  <v-container fill-height>
-    <v-layout align-center justify-center>
-      <v-flex xs12 sm8 md6>
+  <v-container fluid fill-height pl-0 pr-0 pb-0 pt-0>
+    <v-layout align-center fill-height style="max-height: 100vh;">
+      <v-flex xs12 sm6 md6>
+        <div style="width: 100%; height: 100vh; overflow: hidden;">
+          <img
+            src="../../assets/register_bg.jpg"
+            style="width: 100%; position: relative; top: -300px;"
+          />
+        </div>
+      </v-flex>
+
+      <v-spacer></v-spacer>
+
+      <v-flex xs12 sm4 md4>
         <v-form @submit.prevent="register">
           <v-card elevation="12">
-            <v-toolbar dark color="teal lighten-2">
+            <v-toolbar dark :color="getColors.primary">
               <v-toolbar-title>
                 KAYIT FORMU
               </v-toolbar-title>
@@ -13,7 +24,7 @@
               <v-alert
                 dark
                 :value="error"
-                color="orange darken-1"
+                :color="getColors.secondary"
                 icon="warning"
               >
                 Bu kullanıcı zaten var. Farklı bilgilerle tekrar deneyiniz.
@@ -63,23 +74,30 @@
             </v-card-text>
             <v-divider light></v-divider>
             <v-card-actions>
-              <v-btn to="/login" dark color="orange darken-1">Giriş Yap</v-btn>
+              <v-btn to="/login" dark :color="getColors.primary"
+                >Giriş Yap</v-btn
+              >
               <v-spacer></v-spacer>
-              <v-btn type="submit" dark color="teal lighten-2">
+              <v-btn type="submit" dark :color="getColors.secondary">
                 Kaydol
                 <v-icon>keyboard_arrow_right</v-icon>
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-form>
+
+        <p class="login__footer">
+          &copy; BookTracker {{ new Date().getFullYear() }}
+        </p>
       </v-flex>
+      <v-spacer></v-spacer>
     </v-layout>
     <Notification />
   </v-container>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import Notification from "../Notification";
 
 export default {
@@ -105,6 +123,9 @@ export default {
     },
     error: false
   }),
+  computed: {
+    ...mapGetters(["getColors"])
+  },
   methods: {
     ...mapActions(["registerAction", "workNotification"]),
     valid() {
@@ -152,3 +173,14 @@ export default {
   }
 };
 </script>
+
+
+
+<style scoped>
+.login__footer {
+  position: absolute;
+  bottom: 10px;
+  right: 5%;
+  opacity: 0.4;
+}
+</style>

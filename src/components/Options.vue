@@ -1,6 +1,6 @@
 <template>
   <v-card style="width: 100%; height: 100%; overflow: hidden;" tile v-if="show">
-    <v-toolbar color="orange" dark>
+    <v-toolbar :color="getColors.secondary" dark>
       <v-toolbar-title>Seçenekler</v-toolbar-title>
     </v-toolbar>
 
@@ -106,6 +106,7 @@ export default {
     ]
   }),
   computed: {
+    ...mapGetters(["getColors"]),
     show() {
       return !!this.$route.params.id;
     }

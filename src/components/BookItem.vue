@@ -19,7 +19,7 @@
 
       <v-list-item-action>
         <v-btn icon @click.stop="book.isRead = !book.isRead"
-          ><v-icon :color="book.isRead ? 'teal lighten-2' : 'grey lighten-2'"
+          ><v-icon :color="book.isRead ? getColors.primary : 'grey lighten-2'"
             >check_circle</v-icon
           ></v-btn
         >
@@ -30,6 +30,7 @@
 
 <script>
 import UpdateBook from "./UpdateBook";
+import { mapGetters } from "vuex";
 
 export default {
   name: "BookItem",
@@ -43,6 +44,7 @@ export default {
     isCheck: true
   }),
   computed: {
+    ...mapGetters(["getColors"]),
     subtitle() {
       return `Yazar: ${this.book.author}`;
     }

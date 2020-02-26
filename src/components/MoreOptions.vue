@@ -30,13 +30,17 @@
               </v-chip>
             </template>
             <v-card width="300">
-              <v-list dark color="teal darken-1">
+              <v-list dark :color="getColors.primary">
                 <v-list-item>
                   <v-list-item-avatar v-if="avatar">
                     <v-img :src="avatar"></v-img>
                   </v-list-item-avatar>
                   <v-list-item-avatar v-else color="white lighten-2" size="48">
-                    <span class="teal--text headline">{{ shortName }}</span>
+                    <span
+                      class="blue--text headline"
+                      :color="getColors.secondary"
+                      >{{ shortName }}</span
+                    >
                   </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>{{ fullname || "" }}</v-list-item-title>
@@ -120,7 +124,7 @@ export default {
     email: ""
   }),
   computed: {
-    ...mapGetters(["getDrawer", "getUser"]),
+    ...mapGetters(["getDrawer", "getUser", "getColors"]),
     openDrawer: {
       get() {
         return this.getDrawer;
