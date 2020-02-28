@@ -58,7 +58,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       ax.get('/books')
         .then(res => {
-          commit('setCategories', res.data[0]);
+          commit('setCategories', res.data);
           resolve();
         })
         .catch(err => reject(err))
@@ -68,7 +68,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       ax.post('/books', newCategory)
         .then(res => {
-          resolve();
+          commit('setCategories', res.data);
+          resolve(res.data);
         })
         .catch(err => reject(err))
     })
@@ -77,11 +78,13 @@ const actions = {
     return new Promise((resolve, reject) => {
       ax.post(`/books/${id}`)
         .then(res => {
+          commit('setCategories', res.data);
           resolve();
         })
         .catch(err => reject(err))
     })
   },
+  searchCategoriesAction: ({ commit }, text) => commit('searchCategories', text),
   getBooksAction: ({ commit }, id) => commit('getBooks', id)
 };
 
@@ -98,7 +101,10 @@ const mutations = {
     state.userInfo = null,
       state.isLogin = false
   },
-  setCategories: (state, data) => state.categories = data.categories,
+  setCategories: (state, data) => state.categories = data,
+  searchCategories: (state, text) => {
+    state.categories = state.categories.filter(item => item.category.toLowerCase().includes(text.toLowerCase()))
+  },
   getBooks: (state, id) => {
     state.books = state.categories.filter(item => item.category_id === id).map(list => list.books)
   }

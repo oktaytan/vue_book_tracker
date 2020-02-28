@@ -12,7 +12,7 @@ router.get('/', verifyToken, (req, res) => {
     } else {
       const booksDB = await loadBooks();
       const books = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
-      res.status(200).json(books);
+      res.status(200).json(books[0].categories);
     }
   })
 })
@@ -24,8 +24,9 @@ router.post('/', verifyToken, (req, res) => {
       res.status(403).json({ message: err });
     } else {
       const booksDB = await loadBooks();
-      booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $addToSet: { categories: req.body } });
-      res.status(200)
+      await booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $addToSet: { categories: req.body } });
+      const books = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
+      res.status(200).json(books[0].categories);
     }
   })
 });
@@ -41,7 +42,8 @@ router.post('/:id', verifyToken, (req, res) => {
       let categories = await user[0].categories;
       categories = categories.filter(item => item.category_id !== req.params.id);
       await booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $set: { categories: categories } });
-      res.status(200)
+      const books = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
+      res.status(200).json(books[0].categories);
     }
   })
 });

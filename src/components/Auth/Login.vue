@@ -1,22 +1,16 @@
 <template>
   <v-container fluid pl-0 pr-0 pt-0 pb-0 fill-height>
-    <v-layout align-center fill-height style="max-height: 100vh;">
-      <v-flex xs12 sm6 md6>
+    <v-row no-gutters align="center" style="max-height: 100vh;">
+      <v-col cols="12" xs="12" sm="4" md="6" class="d-none d-md-block">
         <div style="width: 100%; height: 100vh; overflow: hidden;">
           <img
             src="../../assets/login_bg.jpg"
-            style="width: 100%; position: relative; top: -300px"
+            style="width: 100%; height: 100%; position: relative;"
           />
         </div>
-
-        <p class="login__footer">
-          &copy; BookTracker {{ new Date().getFullYear() }}
-        </p>
-      </v-flex>
-
+      </v-col>
       <v-spacer></v-spacer>
-
-      <v-flex xs12 sm4 md4>
+      <v-col cols="12" xs="8" sm="8" md="4" class="margin__center--xs">
         <v-form @submit.prevent="login">
           <v-card elevation="12">
             <v-toolbar dark :color="getColors.primary">
@@ -61,9 +55,12 @@
             </v-card-actions>
           </v-card>
         </v-form>
-      </v-flex>
+        <p class="login__footer">
+          &copy; BookTracker {{ new Date().getFullYear() }}
+        </p>
+      </v-col>
       <v-spacer></v-spacer>
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 

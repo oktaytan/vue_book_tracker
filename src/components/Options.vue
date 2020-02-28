@@ -1,10 +1,14 @@
 <template>
-  <v-card style="width: 100%; height: 100%; overflow: hidden;" tile v-if="show">
+  <v-card
+    style="width: 100%; height: 100vh; overflow: hidden;"
+    tile
+    v-if="show"
+  >
     <v-toolbar :color="getColors.secondary" dark>
       <v-toolbar-title>Seçenekler</v-toolbar-title>
     </v-toolbar>
 
-    <v-list style="height: calc(100vh - 128px); overflow-y: scroll">
+    <v-list>
       <v-list-group
         v-for="(item, index) in items"
         :key="index"
@@ -48,7 +52,7 @@
 
         <v-list-item @click.stop="$emit('open-draw')">
           <v-list-item-content>
-            <v-list-item-title>Düzenle</v-list-item-title>
+            <v-list-item-title>Profilim</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 

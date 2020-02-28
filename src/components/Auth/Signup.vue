@@ -1,19 +1,17 @@
 <template>
   <v-container fluid fill-height pl-0 pr-0 pb-0 pt-0>
-    <v-layout align-center fill-height style="max-height: 100vh;">
-      <v-flex xs12 sm6 md6>
+    <v-row no-gutters align="center" style="max-height: 100vh;">
+      <v-col cols="12" xs="12" sm="4" md="6" class="d-none d-md-block">
         <div style="width: 100%; height: 100vh; overflow: hidden;">
           <img
             src="../../assets/register_bg.jpg"
-            style="width: 100%; position: relative; top: -300px;"
+            style="width: 100%; height: 100%; position: relative;"
           />
         </div>
-      </v-flex>
-
+      </v-col>
       <v-spacer></v-spacer>
-
-      <v-flex xs12 sm4 md4>
-        <v-form @submit.prevent="register">
+      <v-col cols="12" xs="8" sm="8" md="4" class="margin__center--xs">
+        <v-form @submit.prevent="register" ref="form" lazy-validation>
           <v-card elevation="12">
             <v-toolbar dark :color="getColors.primary">
               <v-toolbar-title>
@@ -59,7 +57,7 @@
                 label="Şifre"
                 type="password"
                 v-model="password"
-                :rules="[rules.required]"
+                :rules="[rules.required, rules.length]"
               ></v-text-field>
 
               <v-text-field
@@ -85,13 +83,13 @@
             </v-card-actions>
           </v-card>
         </v-form>
-
         <p class="login__footer">
           &copy; BookTracker {{ new Date().getFullYear() }}
         </p>
-      </v-flex>
+      </v-col>
       <v-spacer></v-spacer>
-    </v-layout>
+    </v-row>
+
     <Notification />
   </v-container>
 </template>
@@ -118,7 +116,9 @@ export default {
         return pattern.test(value) || "Geçersiz e-mail";
       },
       length: value => {
-        return value.length < 4 ? "Şifre 4 karakter olmalı" : "";
+        return value && value.length < 4 && !(value.length > 4)
+          ? "Şifre 4 karakter olmalı"
+          : "";
       }
     },
     error: false
@@ -137,38 +137,41 @@ export default {
       return this.password.length === 4;
     },
     register() {
-      const user = {
-        fullname: this.fullname,
-        username: this.username,
-        email: this.email,
-        password: this.password,
-        category: []
-      };
-      this.registerAction(user)
-        .then(data => {
-          const notify = {
-            display: true,
-            alertClass: "success",
-            timeout: 1000,
-            text: "Kullanıcı kaydı yapıldı."
-          };
-          this.workNotification(notify).then(() => {
-            setTimeout(() => {
-              this.$router.push("/login");
-            }, 1000);
-          });
-        })
-        .catch(err => {
-          if (err) {
+      if (this.$refs.form.validate()) {
+        const user = {
+          fullname: this.fullname,
+          username: this.username,
+          email: this.email,
+          password: this.password,
+          category: []
+        };
+
+        this.registerAction(user)
+          .then(data => {
             const notify = {
               display: true,
-              alertClass: "red darken-2",
-              timeout: 3000,
-              text: "Bu kullanıcı sistemde kayıtlı."
+              alertClass: "success",
+              timeout: 1000,
+              text: "Kullanıcı kaydı yapıldı."
             };
-            this.workNotification(notify);
-          }
-        });
+            this.workNotification(notify).then(() => {
+              setTimeout(() => {
+                this.$router.push("/login");
+              }, 1000);
+            });
+          })
+          .catch(err => {
+            if (err) {
+              const notify = {
+                display: true,
+                alertClass: "red darken-2",
+                timeout: 3000,
+                text: "Bu kullanıcı sistemde kayıtlı."
+              };
+              this.workNotification(notify);
+            }
+          });
+      }
     }
   }
 };

@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer
     permanent
-    style="width: 100%; max-height: 100%; overflow: hidden; margin-left: 10px;"
+    style="width: 100%; max-height: 100%; overflow: hidden"
   >
     <v-toolbar :color="getColors.primary" dark>
       <SearchBar
@@ -89,17 +89,18 @@ export default {
     category: "",
     showSearchBar: false
   }),
-  created() {
-    this.getCategoriesAction();
-  },
   computed: {
     ...mapGetters(["getColors", "fetchCategories", "getUser"])
+  },
+  created() {
+    this.getCategoriesAction();
   },
   methods: {
     ...mapActions([
       "getCategoriesAction",
       "addCategoryAction",
-      "deleteCategoryAction"
+      "deleteCategoryAction",
+      "searchCategoriesAction"
     ]),
     addCategory() {
       if (this.category != "") {
@@ -109,25 +110,20 @@ export default {
           books: []
         };
         this.addCategoryAction(newCategory);
-        this.$nextTick(() => this.getCategoriesAction());
         this.category = "";
       }
     },
     removeCategory(id) {
       this.deleteCategoryAction(id);
-      this.$nextTick(() => this.getCategoriesAction());
     },
     displaySearchBar() {
       this.showSearchBar = !this.showSearchBar;
     },
     search(value) {
-      let temp = this.categories;
       if (value == "") {
-        this.categories = temp;
+        this.getCategoriesAction();
       }
-      this.categories = this.categories.filter(list =>
-        list.category.toLowerCase().includes(value.toLowerCase())
-      );
+      this.searchCategoriesAction(value);
     }
   }
 };
