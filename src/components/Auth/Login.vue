@@ -78,7 +78,7 @@ export default {
     ...mapGetters(["isLogin", "getColors"])
   },
   methods: {
-    ...mapActions(["loginAction"]),
+    ...mapActions(["loginAction", "getCategoriesAction"]),
     login() {
       this.loginAction({
         username: this.username,

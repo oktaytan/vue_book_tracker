@@ -7,7 +7,9 @@ import store from './store';
 
 Vue.config.productionTip = false;
 
-new Vue({
+
+
+window.vm = new Vue({
   router,
   store,
   vuetify,

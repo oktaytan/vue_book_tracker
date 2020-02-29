@@ -23,6 +23,7 @@
             <v-text-field
               label="Yeni Kategori ekle"
               v-model="category"
+              autocomplete="off"
             ></v-text-field>
           </v-form>
         </v-list-item-content>
@@ -40,11 +41,12 @@
     <v-list style="height: calc(100vh - 160px); overflow-y: croll">
       <v-list-item
         v-for="list in fetchCategories"
-        :key="list.id"
+        :key="list.category_id"
         :to="{
           name: 'books',
           params: { category: list.category, id: list.category_id }
         }"
+        @dblclick="deleteConfirm = true"
       >
         <v-list-item-content>
           <v-list-item-title v-text="list.category"></v-list-item-title>
@@ -64,10 +66,31 @@
             v-else
             :color="getColors.secondary"
             icon
-            @click="removeCategory(list.category_id)"
+            @click="deleteConfirm = true"
             ><v-icon>delete</v-icon></v-btn
           >
         </v-list-item-action>
+        <v-dialog v-model="deleteConfirm" max-width="500">
+          <v-card>
+            <v-card-title>
+              Kategoriyi silmek istediğinizden emin misiniz ?
+            </v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                style="margin-right: 8px"
+                text
+                dark
+                color="grey"
+                @click="deleteConfirm = false"
+                >İptal</v-btn
+              >
+              <v-btn @click="removeCategory(list.category_id)" color="error"
+                >Sil</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -87,7 +110,8 @@ export default {
   data: () => ({
     drawer: true,
     category: "",
-    showSearchBar: false
+    showSearchBar: false,
+    deleteConfirm: false
   }),
   computed: {
     ...mapGetters(["getColors", "fetchCategories", "getUser"])
@@ -100,7 +124,9 @@ export default {
       "getCategoriesAction",
       "addCategoryAction",
       "deleteCategoryAction",
-      "searchCategoriesAction"
+      "searchCategoriesAction",
+      "workNotification",
+      "getBooksAction"
     ]),
     addCategory() {
       if (this.category != "") {
@@ -109,12 +135,65 @@ export default {
           category: capitalize(this.category),
           books: []
         };
-        this.addCategoryAction(newCategory);
+        this.addCategoryAction(newCategory)
+          .then(data => {
+            let notify = null;
+            if (!data.error && data.status == 200) {
+              notify = {
+                display: true,
+                alertClass: "success",
+                timeout: 2000,
+                text: data.message
+              };
+            } else {
+              notify = {
+                display: true,
+                alertClass: "warning",
+                timeout: 2000,
+                text: "Bir hata oluştu."
+              };
+            }
+            this.workNotification(notify);
+            notify = null;
+          })
+          .catch(err => {
+            let notify = {
+              display: true,
+              alertClass: "info",
+              timeout: 3000,
+              text: err.message
+            };
+            this.workNotification(notify);
+          });
         this.category = "";
       }
     },
     removeCategory(id) {
-      this.deleteCategoryAction(id);
+      this.deleteCategoryAction(id).then(data => {
+        let notify = null;
+        if (!data.error && data.status == 200) {
+          notify = {
+            display: true,
+            alertClass: "success",
+            timeout: 2000,
+            text: data.message
+          };
+        } else {
+          notify = {
+            display: true,
+            alertClass: "warning",
+            timeout: 2000,
+            text: "Bir hata oluştu."
+          };
+        }
+        this.workNotification(notify);
+        notify = null;
+
+        this.deleteConfirm = false;
+        if (this.fetchCategories.length == 0) {
+          this.$router.push("/");
+        }
+      });
     },
     displaySearchBar() {
       this.showSearchBar = !this.showSearchBar;

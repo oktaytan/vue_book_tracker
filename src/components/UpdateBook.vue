@@ -111,7 +111,7 @@ export default {
   methods: {
     updateBook() {
       let newBook = {
-        id: this.updBook.id,
+        book_id: this.updBook.book_id,
         title: this.book.title && capitalize(this.book.title),
         author: this.book.author && capitalize(this.book.author),
         pages: this.book.pages,
@@ -125,7 +125,7 @@ export default {
       this.deleteConfirm = true;
     },
     removeBook() {
-      this.$emit("delete-book", this.updBook.id);
+      this.$emit("delete-book", this.updBook.book_id);
       this.dialog = false;
     }
   }

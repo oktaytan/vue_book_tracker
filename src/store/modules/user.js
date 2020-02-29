@@ -10,7 +10,7 @@ const state = {
 const getters = {
   getUser: state => state.userInfo,
   fetchCategories: state => state.categories,
-  fetchBooks: state => state.books[0],
+  fetchBooks: state => state.books,
   isLogin: state => state.isLogin
 };
 
@@ -69,9 +69,9 @@ const actions = {
       ax.post('/books', newCategory)
         .then(res => {
           commit('setCategories', res.data);
-          resolve(res.data);
+          resolve({ status: res.status, message: "Kategori eklendi.", error: false });
         })
-        .catch(err => reject(err))
+        .catch(err => reject({ status: err.response.status, message: 'Bu isimde kategori var.', error: true, }))
     })
   },
   deleteCategoryAction: ({ commit }, id) => {
@@ -79,13 +79,45 @@ const actions = {
       ax.post(`/books/${id}`)
         .then(res => {
           commit('setCategories', res.data);
-          resolve();
+          resolve({ status: res.status, message: "Kategori silindi.", error: false });
         })
         .catch(err => reject(err))
     })
   },
   searchCategoriesAction: ({ commit }, text) => commit('searchCategories', text),
-  getBooksAction: ({ commit }, id) => commit('getBooks', id)
+  searchBooksAction: ({ commit }, text) => commit('searchBooks', text),
+  getBooksAction: ({ commit }, id) => commit('getBooks', id),
+
+  addBookAction: ({ commit }, payload) => {
+    return new Promise((resolve, reject) => {
+      ax.post(`/books/category/${payload.category_id}`, { book: payload.book })
+        .then(res => {
+          commit('setCategories', res.data);
+          resolve({ status: res.status, message: "Kitap eklendi.", error: false });
+        })
+        .catch(err => reject({ status: err.response.status, message: 'Bu isimde kitap var.', error: true, }))
+    })
+  },
+  deleteBookAction: ({ commit }, payload) => {
+    return new Promise((resolve, reject) => {
+      ax.post(`/books/category/${payload.category_id}/book/${payload.book_id}`, payload)
+        .then(res => {
+          commit('setCategories', res.data);
+          resolve({ status: res.status, message: "Kitap silindi.", error: false });
+        })
+        .catch(err => reject({ status: err.response.status, message: 'Bir hata oluştu.', error: true, }))
+    })
+  },
+  changeReadAction: ({ commit }, payload) => {
+    return new Promise((resolve, reject) => {
+      ax.post(`/books/category/${payload.category_id}/book/${payload.book_id}`, payload)
+        .then(res => {
+          commit('setCategories', res.data);
+          resolve();
+        })
+        .catch(err => reject({ status: err.response.status, message: 'Bir hata oluştu.', error: true, }))
+    })
+  }
 };
 
 const mutations = {
@@ -106,10 +138,12 @@ const mutations = {
     state.categories = state.categories.filter(item => item.category.toLowerCase().includes(text.toLowerCase()))
   },
   getBooks: (state, id) => {
-    state.books = state.categories.filter(item => item.category_id === id).map(list => list.books)
-  }
+    state.books = state.categories.filter(item => item.category_id === id).map(list => list.books)[0]
+  },
+  searchBooks: (state, text) => {
+    state.books = state.books.filter(item => item.title.toLowerCase().includes(text.toLowerCase()) || item.author.toLowerCase().includes(text.toLowerCase()))
+  },
 };
-
 
 export default {
   state,

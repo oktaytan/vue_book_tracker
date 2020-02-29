@@ -1,6 +1,6 @@
 <template>
   <v-list-item-group>
-    <v-list-item @click.stop="toogle(book.id)">
+    <v-list-item @click.stop="changeRead(book.book_id)">
       <v-list-item-action>
         <UpdateBook
           style="margin-left: 1px;"
@@ -18,7 +18,7 @@
       </v-list-item-content>
 
       <v-list-item-action>
-        <v-btn icon @click.stop="book.isRead = !book.isRead"
+        <v-btn icon @click.stop="changeRead(book.book_id)"
           ><v-icon :color="book.isRead ? getColors.primary : 'grey lighten-2'"
             >check_circle</v-icon
           ></v-btn
@@ -30,7 +30,7 @@
 
 <script>
 import UpdateBook from "./UpdateBook";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "BookItem",
@@ -38,11 +38,10 @@ export default {
     UpdateBook
   },
   props: {
-    book: Object
+    book: Object,
+    category_id: String
   },
-  data: () => ({
-    isCheck: true
-  }),
+  data: () => ({}),
   computed: {
     ...mapGetters(["getColors"]),
     subtitle() {
@@ -50,8 +49,17 @@ export default {
     }
   },
   methods: {
-    toogle() {
-      this.book.isRead = !this.book.isRead;
+    ...mapActions(["changeReadAction", "getBooksAction"]),
+    changeRead(id) {
+      const payload = {
+        category_id: this.category_id,
+        book_id: id,
+        delete: false,
+        changeRead: true
+      };
+      this.changeReadAction(payload).then(() => {
+        this.getBooksAction(this.$route.params.id);
+      });
     },
     updateBook(newBook) {
       this.$emit("update-book", newBook);

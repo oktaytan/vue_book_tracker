@@ -5,7 +5,7 @@
     </v-btn>
 
     <v-dialog v-model="dialog" max-width="500">
-      <v-form @submit.prevent="addBook">
+      <v-form @submit.prevent="addBook" ref="newBookForm" lazy-validation>
         <v-card>
           <v-card-title class="headline">Kitap ekle</v-card-title>
 
@@ -14,11 +14,13 @@
               :color="getColors.primary"
               label="Kitap Adı"
               v-model="book.title"
+              :rules="[rules.required]"
             ></v-text-field>
             <v-text-field
               :color="getColors.primary"
               label="Yazar Adı"
               v-model="book.author"
+              :rules="[rules.required]"
             ></v-text-field>
             <v-text-field
               :color="getColors.primary"
@@ -26,12 +28,14 @@
               type="number"
               min="0"
               v-model="book.pages"
+              :rules="[rules.required]"
             ></v-text-field>
             <v-select
               :color="getColors.primary"
               :items="categories"
               label="Kategori"
               v-model="book.category"
+              :rules="[rules.required]"
             ></v-select>
           </v-card-text>
 
@@ -73,6 +77,9 @@ export default {
         author: "",
         pages: null,
         category: ""
+      },
+      rules: {
+        required: value => !!value || "Doldurulması zorunlu alan"
       }
     };
   },
@@ -81,18 +88,17 @@ export default {
   },
   methods: {
     addBook() {
-      let newBook = {
-        title: capitalize(this.book.title),
-        author: capitalize(this.book.author),
-        pages: this.book.pages,
-        category: capitalize(this.book.category)
-      };
-      this.$emit("add-book", newBook);
-      this.dialog = false;
-      this.book.title = "";
-      this.book.author = "";
-      this.book.pages = null;
-      this.book.category = "";
+      if (this.$refs.newBookForm.validate()) {
+        let newBook = {
+          title: capitalize(this.book.title),
+          author: capitalize(this.book.author),
+          pages: this.book.pages,
+          category: capitalize(this.book.category)
+        };
+        this.$emit("add-book", newBook);
+        this.dialog = false;
+        this.$refs.newBookForm.reset();
+      }
     },
     closeDialog() {
       this.dialog = false;
