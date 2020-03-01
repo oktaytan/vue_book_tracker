@@ -116,9 +116,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["workNotification", "logoutAction"]),
+    ...mapActions(["workNotification", "logoutAction", "sortBookAction"]),
     sort(value) {
-      console.log("Sort by " + value);
+      this.sortBookAction({ type: value, category_id: this.$route.params.id });
     },
     filter(value) {
       console.log("Sort by " + value);

@@ -86,6 +86,7 @@ export default {
       "getCategoriesAction",
       "getBooksAction",
       "addBookAction",
+      "updateBookAction",
       "searchBooksAction",
       "deleteBookAction",
       "workNotification"
@@ -137,9 +138,9 @@ export default {
         });
     },
     updateBook(book) {
-      const { id, title, author, pages, category, isRead } = book;
+      const { book_id, title, author, pages, category, isRead } = book;
       const newBook = {
-        book_id: id,
+        book_id: book_id,
         title,
         author,
         pages,
@@ -150,9 +151,37 @@ export default {
         category_id: this.$route.params.id,
         book: newBook
       };
-      this.addBookAction(payload).then(() =>
-        this.getBooksAction(this.$route.params.id)
-      );
+      this.updateBookAction(payload)
+        .then(data => {
+          let notify = null;
+          if (!data.error && data.status == 200) {
+            notify = {
+              display: true,
+              alertClass: "success",
+              timeout: 2000,
+              text: data.message
+            };
+          } else {
+            notify = {
+              display: true,
+              alertClass: "warning",
+              timeout: 2000,
+              text: "Bir hata oluştu."
+            };
+          }
+          this.workNotification(notify);
+          notify = null;
+          this.getBooksAction(this.$route.params.id);
+        })
+        .catch(err => {
+          let notify = {
+            display: true,
+            alertClass: "info",
+            timeout: 3000,
+            text: err.message
+          };
+          this.workNotification(notify);
+        });
     },
     deleteBook(id) {
       const payload = {

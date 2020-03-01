@@ -84,7 +84,7 @@ router.post('/category/:id', verifyToken, async (req, res) => {
 })
 
 // Update Book
-router.post('/category/:id', verifyToken, async (req, res) => {
+router.post('/category/:category_id/update/:book_id', verifyToken, async (req, res) => {
   jwt.verify(req.token, 'secretkey', async (err, authData) => {
     if (err) {
       res.status(403).json({ message: err });
@@ -92,12 +92,11 @@ router.post('/category/:id', verifyToken, async (req, res) => {
       const booksDB = await loadBooks();
       const user = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
       let categories = await user[0].categories;
-      categories = categories.filter(item => item.category_id === req.params.id);
-      categories[0].books = categories[0].books.map(book => {
-        if (book.book_id === req.body.book_id) {
-          book.isRead = !book.isRead
-        }
-      });
+      let selectedCategoryIndex = categories.findIndex(item => item.category_id === req.params.category_id);
+      let selectedCategory = categories.filter(item => item.category_id === req.params.category_id);
+      let bookIndex = selectedCategory[0].books.findIndex(book => book.book_id === req.params.book_id);
+      selectedCategory[0].books.splice(bookIndex, 1, req.body);
+      categories.splice(selectedCategoryIndex, 1, selectedCategory[0]);
       await booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $set: { categories: categories } });
       const books = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
       res.status(200).json(books[0].categories);
@@ -115,15 +114,17 @@ router.post('/category/:category_id/book/:book_id', verifyToken, async (req, res
       const booksDB = await loadBooks();
       const user = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
       let categories = await user[0].categories;
-      categories = categories.filter(item => item.category_id === req.params.category_id);
+      let selectedCategoriesIndex = categories.findIndex(item => item.category_id === req.params.category_id);
+      let selectedCategories = categories.filter(item => item.category_id === req.params.category_id);
       if (req.body.delete) {
-        categories[0].books = categories[0].books.filter(book => book.book_id !== req.params.book_id);
+        selectedCategories[0].books = selectedCategories[0].books.filter(book => book.book_id !== req.params.book_id);
       } else {
-        const bookIndex = categories[0].books.findIndex((book) => book.book_id === req.params.book_id);
-        const book = categories[0].books.find((book) => book.book_id === req.params.book_id);
+        const bookIndex = selectedCategories[0].books.findIndex((book) => book.book_id === req.params.book_id);
+        const book = selectedCategories[0].books.find((book) => book.book_id === req.params.book_id);
         book.isRead = !book.isRead;
-        categories[0].books.splice(bookIndex, 1, book);
+        selectedCategories[0].books.splice(bookIndex, 1, book);
       }
+      categories.splice(selectedCategoriesIndex, 1, selectedCategories[0]);
       await booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $set: { categories: categories } });
       const books = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
       res.status(200).json(books[0].categories);

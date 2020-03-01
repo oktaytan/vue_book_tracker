@@ -27,12 +27,6 @@
               min="0"
               v-model="book.pages"
             ></v-text-field>
-            <v-select
-              :color="getColors.primary"
-              :items="categories"
-              label="Kategori"
-              v-model="book.category"
-            ></v-select>
           </v-form>
         </v-card-text>
 
@@ -84,18 +78,10 @@ export default {
     return {
       dialog: false,
       deleteConfirm: false,
-      categories: [
-        "Roman",
-        "Felsefe",
-        "Kişesel Gelişim",
-        "Hikaye",
-        "Bilgisar Bilimleri"
-      ],
       book: {
         title: "",
         author: "",
-        pages: null,
-        category: ""
+        pages: null
       }
     };
   },
@@ -115,7 +101,7 @@ export default {
         title: this.book.title && capitalize(this.book.title),
         author: this.book.author && capitalize(this.book.author),
         pages: this.book.pages,
-        category: this.book.category && capitalize(this.book.category),
+        category: this.updBook.category,
         isRead: this.updBook.isRead
       };
       this.$emit("update-book", newBook);

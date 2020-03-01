@@ -98,6 +98,16 @@ const actions = {
         .catch(err => reject({ status: err.response.status, message: 'Bu isimde kitap var.', error: true, }))
     })
   },
+  updateBookAction: ({ commit }, payload) => {
+    return new Promise((resolve, reject) => {
+      ax.post(`/books/category/${payload.category_id}/update/${payload.book.book_id}`, payload.book)
+        .then(res => {
+          commit('setCategories', res.data);
+          resolve({ status: res.status, message: "Kitap güncellendi.", error: false });
+        })
+        .catch(err => reject({ status: err.response.status, message: 'Bir hata oluştu.', error: true, }))
+    })
+  },
   deleteBookAction: ({ commit }, payload) => {
     return new Promise((resolve, reject) => {
       ax.post(`/books/category/${payload.category_id}/book/${payload.book_id}`, payload)
@@ -117,7 +127,8 @@ const actions = {
         })
         .catch(err => reject({ status: err.response.status, message: 'Bir hata oluştu.', error: true, }))
     })
-  }
+  },
+  sortBookAction: ({ commit }, payload) => commit('sortBook', payload)
 };
 
 const mutations = {
@@ -143,6 +154,30 @@ const mutations = {
   searchBooks: (state, text) => {
     state.books = state.books.filter(item => item.title.toLowerCase().includes(text.toLowerCase()) || item.author.toLowerCase().includes(text.toLowerCase()))
   },
+  sortBook: (state, data) => {
+    switch (data.type) {
+      case 'bookName':
+        state.books = state.books.sort((a, b) => {
+          if (a.title > b.title) {
+            return 1;
+          } else if (a.title < b.title) {
+            return -1;
+          }
+          return 0;
+        });
+        break;
+      case 'authorName':
+        state.books = state.books.sort((a, b) => {
+          if (a.author > b.author) {
+            return 1;
+          } else if (a.author < b.author) {
+            return -1;
+          }
+          return 0;
+        });
+        break;
+    }
+  }
 };
 
 export default {
