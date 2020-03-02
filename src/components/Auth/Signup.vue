@@ -11,7 +11,7 @@
       </v-col>
       <v-spacer></v-spacer>
       <v-col cols="12" xs="8" sm="8" md="4" class="margin__center--xs">
-        <v-form @submit.prevent="register" ref="form" lazy-validation>
+        <v-form @submit.prevent="register">
           <v-card elevation="12">
             <v-toolbar dark :color="getColors.primary">
               <v-toolbar-title>
@@ -26,6 +26,14 @@
                 icon="warning"
               >
                 Bu kullanıcı zaten var. Farklı bilgilerle tekrar deneyiniz.
+              </v-alert>
+              <v-alert
+                dark
+                :value="emptyError"
+                :color="getColors.secondary"
+                icon="warning"
+              >
+                Bütün alanların doldurulması gerekir.
               </v-alert>
               <v-text-field
                 prepend-icon="perm_identity"
@@ -116,12 +124,11 @@ export default {
         return pattern.test(value) || "Geçersiz e-mail";
       },
       length: value => {
-        return value && value.length < 4 && !(value.length > 4)
-          ? "Şifre 4 karakter olmalı"
-          : "";
+        return value && value.length < 4 ? "Şifre 4 karakter olmalı" : "";
       }
     },
-    error: false
+    error: false,
+    emptyError: false
   }),
   computed: {
     ...mapGetters(["getColors"])
@@ -137,7 +144,13 @@ export default {
       return this.password.length === 4;
     },
     register() {
-      if (this.$refs.form.validate()) {
+      if (
+        this.fullname != "" &&
+        this.username != "" &&
+        this.email != "" &&
+        this.password &&
+        this.confirm_password != ""
+      ) {
         const user = {
           fullname: this.fullname,
           username: this.username,
@@ -171,6 +184,10 @@ export default {
               this.workNotification(notify);
             }
           });
+      } else {
+        this.emptyError = true;
+        setTimeout(() => (this.emptyError = false), 3000);
+        return false;
       }
     }
   }

@@ -17,7 +17,7 @@
     </v-toolbar>
 
     <v-list>
-      <v-list-item>
+      <v-list-item :color="getColors.text">
         <v-list-item-content>
           <v-list-item-title>Yeni kitap ekle</v-list-item-title>
         </v-list-item-content>
@@ -67,12 +67,14 @@ export default {
     showSearchBar: false
   }),
   created() {
-    this.getCategoriesAction().then(() =>
-      this.getBooksAction(this.$route.params.id)
-    );
+    this.getCategoriesAction().then(() => {
+      this.getBooksAction(this.$route.params.id);
+    });
   },
   beforeRouteUpdate(to, from, next) {
-    this.getCategoriesAction().then(() => this.getBooksAction(to.params.id));
+    this.getCategoriesAction().then(() => {
+      this.getBooksAction(to.params.id);
+    });
     next();
   },
   computed: {

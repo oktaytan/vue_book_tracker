@@ -80,6 +80,42 @@ router.get('/', async (req, res) => {
   res.json(users);
 })
 
+// Upload Background
+router.post('/upload_bg', verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', async (err, authData) => {
+    if (err) {
+      res.status(403).json({ message: err });
+    } else {
+      const usersDB = await loadUsers();
+      console.log(req.body);
+      const user = await usersDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
+      await usersDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $set: { background: req.body } });
+      const users = await usersDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
+      res.status(200).json(users[0]);
+    }
+  })
+})
+
+// Verify Token
+function verifyToken(req, res, next) {
+  // Get auth header value
+  const bearerHeader = req.headers['authorization'];
+  // Check if bearer is undefined
+  if (typeof bearerHeader !== 'undefined') {
+    // Split at the space
+    const bearer = bearerHeader.split(' ');
+    // Get token from array
+    const bearerToken = bearer[1];
+    // Set the token
+    req.token = bearerToken;
+    // Next middleware
+    next();
+  } else {
+    // Forbidden
+    res.sendStatus(403);
+  }
+}
+
 async function loadUsers() {
   const client = await mongodb.MongoClient.connect('mongodb://localhost:27017/vue_book_db',
     { useNewUrlParser: true, useUnifiedTopology: true });

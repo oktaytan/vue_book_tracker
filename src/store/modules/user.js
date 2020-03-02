@@ -4,14 +4,16 @@ const state = {
   userInfo: {},
   isLogin: false,
   categories: [],
-  books: []
+  books: [],
+  background: ''
 };
 
 const getters = {
   getUser: state => state.userInfo,
   fetchCategories: state => state.categories,
   fetchBooks: state => state.books,
-  isLogin: state => state.isLogin
+  isLogin: state => state.isLogin,
+  getBackground: state => state.background
 };
 
 const actions = {
@@ -66,7 +68,7 @@ const actions = {
   },
   addCategoryAction: ({ commit }, newCategory) => {
     return new Promise((resolve, reject) => {
-      ax.post('/books', newCategory)
+      ax.post('/books/add', newCategory)
         .then(res => {
           commit('setCategories', res.data);
           resolve({ status: res.status, message: "Kategori eklendi.", error: false });
@@ -128,7 +130,22 @@ const actions = {
         .catch(err => reject({ status: err.response.status, message: 'Bir hata oluştu.', error: true, }))
     })
   },
-  sortBookAction: ({ commit }, payload) => commit('sortBook', payload)
+  sortBookAction: ({ commit }, payload) => commit('sortBook', payload),
+  filterBookAction: ({ commit }, payload) => commit('filterBook', payload),
+  removeBookList: ({ commit }, category_id) => {
+    return new Promise((resolve, reject) => {
+      ax.post(`/books/category/${category_id}/deleteBooks`)
+        .then(res => {
+          commit('setCategories', res.data);
+          resolve();
+        })
+        .catch(err => reject({ status: err.response.status, message: 'Bir hata oluştu.', error: true, }))
+    })
+  },
+  uploadBackgroundAction: ({ commit }, image) => {
+    localStorage.setItem('background', JSON.stringify(image));
+    commit('uploadBackground', JSON.parse(localStorage.getItem('background')))
+  }
 };
 
 const mutations = {
@@ -177,7 +194,21 @@ const mutations = {
         });
         break;
     }
-  }
+  },
+  filterBook: (state, data) => {
+    switch (data.type) {
+      case 'remaining':
+        state.books = state.categories.filter(item => item.category_id === data.category_id).map(list => list.books)[0].filter(book => book.isRead == false);
+        break;
+      case 'read':
+        state.books = state.categories.filter(item => item.category_id === data.category_id).map(list => list.books)[0].filter(book => book.isRead == true);
+        break;
+      case 'all':
+        state.books = state.categories.filter(item => item.category_id === data.category_id).map(list => list.books)[0]
+        break;
+    }
+  },
+  uploadBackground: (state, image) => state.background = image
 };
 
 export default {

@@ -19,7 +19,7 @@ router.get('/', verifyToken, (req, res) => {
 })
 
 // Add new category
-router.post('/', verifyToken, (req, res) => {
+router.post('/add', verifyToken, (req, res) => {
   jwt.verify(req.token, 'secretkey', async (err, authData) => {
     if (err) {
       res.status(403).json({ message: err });
@@ -124,6 +124,26 @@ router.post('/category/:category_id/book/:book_id', verifyToken, async (req, res
         book.isRead = !book.isRead;
         selectedCategories[0].books.splice(bookIndex, 1, book);
       }
+      categories.splice(selectedCategoriesIndex, 1, selectedCategories[0]);
+      await booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $set: { categories: categories } });
+      const books = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
+      res.status(200).json(books[0].categories);
+    }
+  })
+})
+
+// Delete Book List
+router.post('/category/:category_id/deleteBooks', verifyToken, async (req, res) => {
+  jwt.verify(req.token, 'secretkey', async (err, authData) => {
+    if (err) {
+      res.status(403).json({ message: err });
+    } else {
+      const booksDB = await loadBooks();
+      const user = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();
+      let categories = await user[0].categories;
+      let selectedCategoriesIndex = categories.findIndex(item => item.category_id === req.params.category_id);
+      let selectedCategories = categories.filter(item => item.category_id === req.params.category_id);
+      selectedCategories[0].books = [];
       categories.splice(selectedCategoriesIndex, 1, selectedCategories[0]);
       await booksDB.updateOne({ _id: new mongodb.ObjectID(authData._id) }, { $set: { categories: categories } });
       const books = await booksDB.find({ _id: new mongodb.ObjectID(authData._id) }).toArray();

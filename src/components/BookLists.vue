@@ -24,6 +24,7 @@
               label="Yeni Kategori ekle"
               v-model="category"
               autocomplete="off"
+              :color="getColors.text"
             ></v-text-field>
           </v-form>
         </v-list-item-content>
@@ -42,6 +43,7 @@
       <v-list-item
         v-for="list in fetchCategories"
         :key="list.category_id"
+        :color="getColors.text"
         :to="{
           name: 'books',
           params: { category: list.category, id: list.category_id }

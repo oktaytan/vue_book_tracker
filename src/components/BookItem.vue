@@ -1,6 +1,6 @@
 <template>
   <v-list-item-group>
-    <v-list-item @click.stop="changeRead(book.book_id)">
+    <v-list-item @click.stop="changeRead(book.book_id)" :color="getColors.text">
       <v-list-item-action>
         <UpdateBook
           style="margin-left: 1px;"

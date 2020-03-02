@@ -17,12 +17,12 @@ const state = {
 const getters = {
   getDrawer: state => state.drawer,
   notification: state => state.notification,
-  getColors: state => state.colors
+  getColors: state => state.colors,
 };
 
 const actions = {
   workDrawer: ({ commit }, value) => commit('setDrawer', value),
-  workNotification: ({ commit }, value) => commit('setNotification', value),
+  workNotification: ({ commit }, value) => commit('setNotification', value)
 };
 
 const mutations = {
@@ -35,7 +35,7 @@ const mutations = {
       state.notification.timeout = timeout;
       resolve();
     })
-  },
+  }
 };
 
 

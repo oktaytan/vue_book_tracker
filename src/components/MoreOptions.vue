@@ -44,7 +44,7 @@
                   </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>{{ fullname || "" }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ email }}</v-list-item-subtitle>
+                    <v-list-item-subtitle>{{ username }}</v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-btn icon @click="menu = false">
@@ -54,11 +54,11 @@
                 </v-list-item>
               </v-list>
               <v-list>
-                <v-list-item @click="() => {}">
+                <v-list-item>
                   <v-list-item-action>
-                    <v-icon>mdi-briefcase</v-icon>
+                    <v-icon>mdi-email</v-icon>
                   </v-list-item-action>
-                  <v-list-item-subtitle>Profili düzenle</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ email }}</v-list-item-subtitle>
                 </v-list-item>
               </v-list>
             </v-card>
@@ -121,7 +121,8 @@ export default {
     clearable: false,
     menu: false,
     fullname: "",
-    email: ""
+    email: "",
+    username: ""
   }),
   computed: {
     ...mapGetters(["getDrawer", "getUser", "getColors"]),
@@ -147,6 +148,7 @@ export default {
     this.fullname =
       (this.getUser.fullname && capitalize(this.getUser.fullname)) || "";
     this.email = this.getUser.email;
+    this.username = this.getUser.username;
   },
   watch: {
     fullname(value) {
@@ -157,7 +159,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["workDrawer"]),
+    ...mapActions(["workDrawer", "uploadBackgroundAction"]),
     pickFile() {
       this.$refs.image.click();
     },
@@ -168,7 +170,6 @@ export default {
         if (this.imageName.lastIndexOf(".") <= 0) {
           return;
         }
-
         const fr = new FileReader();
         fr.readAsDataURL(files[0]);
         fr.addEventListener("load", () => {
@@ -183,7 +184,8 @@ export default {
       }
     },
     uploadFile() {
-      console.log(this.imageFile);
+      this.uploadBackgroundAction(this.imageUrl);
+      this.workDrawer(false);
     }
   }
 };

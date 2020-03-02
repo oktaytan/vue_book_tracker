@@ -1,5 +1,10 @@
 <template>
-  <v-container fluid class="pa-0 pt-0 pb-0 bg" v-if="isLogin">
+  <v-container
+    fluid
+    class="pa-0 pt-0 pb-0"
+    :style="{ background: `url(${setBackground} ) no-repeat 0 0 / cover` }"
+    v-if="isLogin"
+  >
     <v-row no-gutters justify="space-between">
       <v-col
         cols="12"
@@ -48,7 +53,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["isLogin", "getColors"])
+    ...mapGetters(["isLogin", "getColors", "getBackground"]),
+    setBackground() {
+      return this.getBackground;
+    }
   },
   components: {
     BookLists,
